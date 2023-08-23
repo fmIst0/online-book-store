@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: modify-price-datatype
+      author: fmIst0
+      changes:
+        - modifyDataType:
+            columnName: price
+            newDataType: decimal(10,2)
+            tableName: books
