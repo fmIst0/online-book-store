@@ -1,15 +1,20 @@
 package com.bookstore.controller;
 
 import com.bookstore.dto.BookDto;
+import com.bookstore.dto.BookSearchParametersDto;
 import com.bookstore.dto.CreateBookRequestDto;
 import com.bookstore.service.BookService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
@@ -32,4 +37,22 @@ public class BookController {
     public BookDto createBook(@RequestBody CreateBookRequestDto bookRequestDto) {
         return bookService.createBook(bookRequestDto);
     }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PutMapping("/{id}")
+    public void updateBook(@PathVariable Long id,
+                           @RequestBody CreateBookRequestDto bookRequestDto) {
+        bookService.updateBook(id, bookRequestDto);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteBookById(@PathVariable Long id) {
+        bookService.deleteBookById(id);
+    }
+
+    @GetMapping("/search")
+    public List<BookDto> searchBooks(BookSearchParametersDto searchParameters) {
+        return bookService.searchBooks(searchParameters);
+    }
+
 }
