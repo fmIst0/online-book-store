@@ -8,8 +8,7 @@ import lombok.Data;
 
 @Data
 public class UserLoginRequestDto {
-    @Email(message = "Email is not valid",
-            regexp = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$")
+    @Email(message = "Email is not valid")
     @NotEmpty
     private String email;
     @NotBlank
