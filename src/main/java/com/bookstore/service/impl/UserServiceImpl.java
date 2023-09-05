@@ -39,13 +39,7 @@ public class UserServiceImpl implements UserService {
         user.setShippingAddress(requestDto.getShippingAddress());
         Role userRole = roleRepository.findRoleByName(Role.RoleName.USER)
                 .orElseThrow(() -> new RegistrationException("Can't find role by name"));
-        Role adminRole = roleRepository.findRoleByName(Role.RoleName.ADMIN)
-                .orElseThrow(() -> new RegistrationException("Can't find role by name"));
         Set<Role> roles = new HashSet<>();
-        if (user.getEmail().startsWith("admin")) {
-            roles.add(userRole);
-            roles.add(adminRole);
-        }
         roles.add(userRole);
         user.setRoles(roles);
         return userMapper.toUserResponse(userRepository.save(user));
