@@ -29,6 +29,7 @@
         </maven.checkstyle.plugin.configLocation>
         <lombok.mapstruct.binding.version>0.2.0</lombok.mapstruct.binding.version>
         <mapstruct.version>1.5.5.Final</mapstruct.version>
+        <jjvt.version>0.11.5</jjvt.version>
     </properties>
 
     <dependencies>
@@ -54,8 +55,33 @@
         </dependency>
 
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>${jjvt.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>${jjvt.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>${jjvt.version}</version>
+            <scope>runtime</scope>
         </dependency>
 
         <dependency>
@@ -132,7 +158,7 @@
                     <configLocation>${maven.checkstyle.plugin.configLocation}</configLocation>
                     <sourceDirectories>${project.build.sourceDirectory},${project.build.testSourceDirectory}
                     </sourceDirectories>
-                    <excludes>com/bookstore/dto/BookSearchParametersDto.java</excludes>
+                    <excludes>com/bookstore/dto/book/BookSearchParametersDto.java,</excludes>
                     <encoding>UTF-8</encoding>
                     <consoleOutput>true</consoleOutput>
                     <failsOnError>true</failsOnError>
