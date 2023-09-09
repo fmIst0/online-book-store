@@ -46,14 +46,14 @@ public class BookController {
     @GetMapping("/search")
     @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Search books", description = "Search book by specific search parameters")
-    public List<BookDto> searchBooks(BookSearchParametersDto searchParameters, Pageable pageable) {
-        return bookService.searchBooks(searchParameters, pageable);
+    public List<BookDto> searchBooks(BookSearchParametersDto searchParameters) {
+        return bookService.searchBooks(searchParameters);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Create a new book", description = "Create a new book")
+    @Operation(summary = "Create a new book(only for admins)", description = "Create a new book")
     public BookDto createBook(@RequestBody @Valid CreateBookRequestDto bookRequestDto) {
         return bookService.createBook(bookRequestDto);
     }
@@ -61,7 +61,8 @@ public class BookController {
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.ACCEPTED)
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Update the existing book", description = "Update the existing book")
+    @Operation(summary = "Update the existing book(only for admins)",
+            description = "Update the existing book")
     public void updateBook(@PathVariable Long id,
                            @RequestBody @Valid CreateBookRequestDto bookRequestDto) {
         bookService.updateBook(id, bookRequestDto);
@@ -69,7 +70,7 @@ public class BookController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Delete book", description = "Delete book by specific id")
+    @Operation(summary = "Delete book(only for admins)", description = "Delete book by specific id")
     public void deleteBookById(@PathVariable Long id) {
         bookService.deleteBookById(id);
     }
