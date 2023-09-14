@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -46,7 +47,7 @@ public class BookController {
     @GetMapping("/search")
     @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Search books", description = "Search book by specific search parameters")
-    public List<BookDto> searchBooks(BookSearchParametersDto searchParameters) {
+    public Page<BookDto> searchBooks(BookSearchParametersDto searchParameters) {
         return bookService.searchBooks(searchParameters);
     }
 

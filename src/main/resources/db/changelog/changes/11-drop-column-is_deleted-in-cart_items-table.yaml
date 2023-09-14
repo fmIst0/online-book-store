@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: drop-column-is_deleted-in-cart_items-table
+      author: fmIst0
+      changes:
+        - dropColumn:
+            tableName: cart_items
+            columnName: is_deleted
