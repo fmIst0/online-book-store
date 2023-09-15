@@ -6,9 +6,11 @@ import com.bookstore.dto.shoppingcart.ShoppingCartDto;
 import com.bookstore.exception.EntityNotFoundException;
 import com.bookstore.mapper.CartItemMapper;
 import com.bookstore.mapper.ShoppingCartMapper;
+import com.bookstore.model.Book;
 import com.bookstore.model.CartItem;
 import com.bookstore.model.ShoppingCart;
 import com.bookstore.model.User;
+import com.bookstore.repository.book.BookRepository;
 import com.bookstore.repository.cartitem.CartItemRepository;
 import com.bookstore.repository.shoppingcart.ShoppingCartRepository;
 import com.bookstore.repository.user.UserRepository;
@@ -26,6 +28,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     private final UserRepository userRepository;
     private final CartItemMapper cartItemMapper;
     private final CartItemRepository cartItemRepository;
+    private final BookRepository bookRepository;
 
     @Override
     public List<ShoppingCartDto> findAll(Pageable pageable) {
@@ -43,9 +46,13 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Override
     public ShoppingCartDto saveBookToTheCart(Long userId, CartItemCreateDto cartItemCreateDto) {
         ShoppingCart shoppingCart = getShoppingCartByUserId(userId);
-        CartItem cartItem = cartItemMapper.toEntity(cartItemCreateDto);
-        cartItem.setShoppingCart(shoppingCart);
+        Book book = bookRepository.findById(cartItemCreateDto.getBookId()).orElseThrow(() ->
+                new EntityNotFoundException(
+                        "Can't find a book in DB by id: " + cartItemCreateDto.getBookId()
+                ));
+        CartItem cartItem = cartItemMapper.toEntity(cartItemCreateDto, book, shoppingCart);
         cartItemRepository.save(cartItem);
+        shoppingCart.addCartItemToSet(cartItem);
         return shoppingCartMapper.toDto(getShoppingCartByUserId(userId));
     }
 
@@ -60,7 +67,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                         ));
         cartItem.setQuantity(cartItemUpdateDto.getQuantity());
         cartItemRepository.save(cartItem);
-        return getByUserId(userId);
+        return shoppingCartMapper.toDto(getShoppingCartByUserId(userId));
     }
 
     @Override
