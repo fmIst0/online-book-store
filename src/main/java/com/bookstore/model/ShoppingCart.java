@@ -30,7 +30,7 @@ public class ShoppingCart {
     private User user;
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @OneToMany(mappedBy = "shoppingCart", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "shoppingCart", cascade = CascadeType.ALL)
     private Set<CartItem> cartItems;
 
     public void addCartItemToSet(CartItem cartItem) {

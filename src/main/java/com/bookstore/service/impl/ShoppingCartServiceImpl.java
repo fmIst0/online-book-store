@@ -15,6 +15,8 @@ import com.bookstore.repository.cartitem.CartItemRepository;
 import com.bookstore.repository.shoppingcart.ShoppingCartRepository;
 import com.bookstore.repository.user.UserRepository;
 import com.bookstore.service.ShoppingCartService;
+import jakarta.transaction.Transactional;
+import java.util.HashSet;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -75,7 +77,8 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         cartItemRepository.deleteById(id);
     }
 
-    private ShoppingCart getShoppingCartByUserId(Long id) {
+    @Override
+    public ShoppingCart getShoppingCartByUserId(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() ->
                         new EntityNotFoundException("Can't find user in DB by id: " + id));
@@ -84,5 +87,12 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                         new EntityNotFoundException(
                                 "Can't find a shopping cart by id: " + user.getId()
                         ));
+    }
+
+    @Override
+    @Transactional
+    public void cleanShoppingCart(ShoppingCart shoppingCart) {
+        shoppingCart.setCartItems(new HashSet<>());
+        cartItemRepository.deleteCartItemsByShoppingCartId(shoppingCart.getId());
     }
 }
