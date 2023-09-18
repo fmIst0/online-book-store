@@ -8,13 +8,15 @@ import java.util.List;
 import org.springframework.data.domain.Pageable;
 
 public interface OrderService {
-    OrderResponseDto saveOrderFromCart(Long userId, OrderCreateDto orderCreateDto);
+    OrderResponseDto placeOrder(Long userId, OrderCreateDto orderCreateDto);
 
     void updateOrderStatus(Long id, OrderUpdateDto orderUpdateDto);
 
-    OrderItemResponseDto getOrderItemWithinAnOrder(Long orderId, Long itemId);
+    OrderItemResponseDto getOrderItemWithinAnOrder(Long orderId, Long itemId, Long userId);
 
     List<OrderResponseDto> getAllUserOrders(Long userId, Pageable pageable);
 
-    List<OrderItemResponseDto> getAllOrderItemsByOrderId(Long orderId, Pageable pageable);
+    List<OrderItemResponseDto> getAllOrderItemsByOrderId(Long orderId,
+                                                         Long userId,
+                                                         Pageable pageable);
 }

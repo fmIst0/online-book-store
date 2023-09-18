@@ -31,16 +31,17 @@ public class OrderServiceImpl implements OrderService {
     private final OrderItemRepository orderItemRepository;
 
     @Override
-    public OrderResponseDto saveOrderFromCart(Long userId, OrderCreateDto orderCreateDto) {
+    public OrderResponseDto placeOrder(Long userId, OrderCreateDto orderCreateDto) {
         ShoppingCart shoppingCart = shoppingCartService.getShoppingCartByUserId(userId);
         Order newOrder = orderMapper.shoppingCartToOrder(shoppingCart);
+        newOrder.setTotal(shoppingCart.getTotal());
         newOrder.setShippingAddress(orderCreateDto.getShippingAddress());
 
         Order savedOrder = orderRepository.save(newOrder);
 
         Set<OrderItem> orderItemSet = getOrderItemsFromCart(shoppingCart);
         setOrderForOrderItems(orderItemSet, savedOrder);
-        savedOrder.setOrderItems(getSavedOrderItems(orderItemSet));
+        savedOrder.setOrderItems(saveOrderItems(orderItemSet));
         shoppingCartService.cleanShoppingCart(shoppingCart);
         return orderMapper.toDto(savedOrder);
     }
@@ -53,9 +54,10 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderItemResponseDto getOrderItemWithinAnOrder(Long orderId, Long itemId) {
+    public OrderItemResponseDto getOrderItemWithinAnOrder(Long orderId, Long itemId, Long userId) {
         return orderItemMapper.toDto(
-                orderItemRepository.findOrderItemByOrderIdAndByItemId(orderId, itemId)
+                orderItemRepository
+                        .findOrderItemByOrderIdAndByItemIdAndByUserId(orderId, itemId, userId)
         );
     }
 
@@ -68,8 +70,10 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderItemResponseDto> getAllOrderItemsByOrderId(Long orderId, Pageable pageable) {
-        return orderItemRepository.findOrderItemsByOrderId(orderId, pageable)
+    public List<OrderItemResponseDto> getAllOrderItemsByOrderId(Long orderId,
+                                                                Long userId,
+                                                                Pageable pageable) {
+        return orderItemRepository.findOrderItemsByOrderIdAndByUserId(orderId, userId, pageable)
                 .stream()
                 .map(orderItemMapper::toDto)
                 .toList();
@@ -86,7 +90,7 @@ public class OrderServiceImpl implements OrderService {
         orderItemSet.forEach(orderItem -> orderItem.setOrder(order));
     }
 
-    private Set<OrderItem> getSavedOrderItems(Set<OrderItem> orderItemSet) {
+    private Set<OrderItem> saveOrderItems(Set<OrderItem> orderItemSet) {
         return orderItemSet.stream()
                 .map(orderItemRepository::save)
                 .collect(Collectors.toSet());

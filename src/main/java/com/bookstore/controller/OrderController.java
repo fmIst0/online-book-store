@@ -39,7 +39,7 @@ public class OrderController {
     public OrderResponseDto createOrder(Authentication authentication,
                                         @RequestBody @Valid OrderCreateDto orderCreateDto) {
         User user = (User) authentication.getPrincipal();
-        return orderService.saveOrderFromCart(user.getId(), orderCreateDto);
+        return orderService.placeOrder(user.getId(), orderCreateDto);
     }
 
     @GetMapping
@@ -56,18 +56,22 @@ public class OrderController {
     @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Retrieve all OrderItems for a specific order",
             description = "Retrieve all OrderItems for a specific order")
-    public List<OrderItemResponseDto> getAllOrderItemsByOrderId(@PathVariable Long orderId,
+    public List<OrderItemResponseDto> getAllOrderItemsByOrderId(Authentication authentication,
+                                                                @PathVariable Long orderId,
                                                                 Pageable pageable) {
-        return orderService.getAllOrderItemsByOrderId(orderId, pageable);
+        User user = (User) authentication.getPrincipal();
+        return orderService.getAllOrderItemsByOrderId(orderId, user.getId(), pageable);
     }
 
     @GetMapping(value = "/{orderId}/items/{itemId}")
     @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Retrieve a specific OrderItem within an order",
             description = "Retrieve a specific OrderItem within an order")
-    public OrderItemResponseDto getOrderItemWithinAnOrder(@PathVariable Long orderId,
+    public OrderItemResponseDto getOrderItemWithinAnOrder(Authentication authentication,
+                                                          @PathVariable Long orderId,
                                                           @PathVariable Long itemId) {
-        return orderService.getOrderItemWithinAnOrder(orderId, itemId);
+        User user = (User) authentication.getPrincipal();
+        return orderService.getOrderItemWithinAnOrder(orderId, itemId, user.getId());
     }
 
     @PatchMapping(value = "/{id}")

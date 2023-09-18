@@ -8,6 +8,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
+import java.math.BigDecimal;
 import java.util.Set;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -36,5 +37,17 @@ public class ShoppingCart {
     public void addCartItemToSet(CartItem cartItem) {
         cartItems.add(cartItem);
         cartItem.setShoppingCart(this);
+    }
+
+    public BigDecimal getTotal() {
+        return this.getCartItems()
+                .stream()
+                .map(cartItem -> cartItem.getBook()
+                        .getPrice()
+                        .multiply(
+                                BigDecimal.valueOf(cartItem.getQuantity())
+                        )
+                )
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }

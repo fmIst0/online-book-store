@@ -16,10 +16,8 @@ import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Set;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
@@ -28,7 +26,6 @@ import org.hibernate.annotations.Where;
 @SQLDelete(sql = "UPDATE orders SET is_deleted=true WHERE id=?")
 @Where(clause = "is_deleted=false")
 @Entity
-@EqualsAndHashCode
 @Table(name = "orders")
 public class Order {
     @Id
@@ -46,8 +43,6 @@ public class Order {
     private LocalDateTime orderDate;
     @Column(name = "shipping_address", nullable = false)
     private String shippingAddress;
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<OrderItem> orderItems;
     @Column(name = "is_deleted", nullable = false)
