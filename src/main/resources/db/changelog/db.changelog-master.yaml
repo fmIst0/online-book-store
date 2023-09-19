@@ -21,3 +21,9 @@ databaseChangeLog:
       file: db/changelog/changes/10-create-cart-items-table.yaml
   - include:
       file: db/changelog/changes/11-drop-column-is_deleted-in-cart_items-table.yaml
+  - include:
+      file: db/changelog/changes/12-create-orders-table.yaml
+  - include:
+      file: db/changelog/changes/13-create-order_items-table.yaml
+  - include:
+      file: db/changelog/changes/14-modify-data-type-order_total-order_items_price.yaml
