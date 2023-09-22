@@ -3,6 +3,7 @@ package com.bookstore.repository.book;
 import com.bookstore.model.Book;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -19,8 +20,8 @@ public interface BookRepository extends JpaRepository<Book, Long>,
     @EntityGraph(attributePaths = "categories")
     Optional<Book> findById(Long id);
 
-    @Query("FROM Book b LEFT JOIN FETCH b.categories c")
-    List<Book> findAllPageable(Pageable pageable);
+    @EntityGraph(attributePaths = "categories")
+    Page<Book> findAll(Pageable pageable);
 
     @EntityGraph(attributePaths = "categories")
     List<Book> findAll(Specification<Book> bookSpecification);

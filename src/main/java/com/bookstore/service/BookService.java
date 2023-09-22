@@ -15,7 +15,7 @@ public interface BookService {
 
     List<BookDto> getAll(Pageable pageable);
 
-    void updateBook(Long id, CreateBookRequestDto bookRequestDto);
+    BookDto updateBook(Long id, CreateBookRequestDto bookRequestDto);
 
     void deleteBookById(Long id);
 
