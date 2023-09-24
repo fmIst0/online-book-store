@@ -15,8 +15,6 @@ import com.bookstore.service.BookService;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -71,17 +69,19 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public void deleteBookById(Long id) {
+        if (bookRepository.findById(id).isEmpty()) {
+            throw new EntityNotFoundException("Can't delete a book from DB with id: " + id);
+        }
         bookRepository.deleteById(id);
     }
 
     @Override
-    public Page<BookDto> searchBooks(BookSearchParametersDto searchParameters) {
+    public List<BookDto> searchBooks(BookSearchParametersDto searchParameters, Pageable pageable) {
         Specification<Book> bookSpecification = bookSpecificationBuilder.build(searchParameters);
-        List<BookDto> bookDtos = bookRepository.findAll(bookSpecification)
+        return bookRepository.findAll(bookSpecification, pageable)
                 .stream()
                 .map(bookMapper::toDto)
                 .toList();
-        return new PageImpl<>(bookDtos, Pageable.ofSize(10), bookDtos.size());
     }
 
     @Override

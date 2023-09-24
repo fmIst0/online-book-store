@@ -1,6 +1,7 @@
 package com.bookstore.service.impl;
 
 import com.bookstore.dto.category.CategoryDto;
+import com.bookstore.exception.DataBaseConflictException;
 import com.bookstore.exception.EntityNotFoundException;
 import com.bookstore.mapper.CategoryMapper;
 import com.bookstore.model.Category;
@@ -35,6 +36,11 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryDto save(CategoryDto categoryDto) {
+        if (categoryRepository.findCategoryByName(categoryDto.getName()).isPresent()) {
+            throw new DataBaseConflictException(
+                    "Category with name -" + categoryDto.getName() + "- already exists."
+            );
+        }
         Category category = categoryMapper.toEntity(categoryDto);
         return categoryMapper.toDto(categoryRepository.save(category));
     }
@@ -51,6 +57,11 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void deleteById(Long id) {
+        if (categoryRepository.findById(id).isEmpty()) {
+            throw new EntityNotFoundException(
+                    "Can't delete a category from DB with id: " + id
+            );
+        }
         categoryRepository.deleteById(id);
     }
 }

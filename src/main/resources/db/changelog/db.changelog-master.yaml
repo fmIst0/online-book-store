@@ -27,3 +27,5 @@ databaseChangeLog:
       file: db/changelog/changes/13-create-order_items-table.yaml
   - include:
       file: db/changelog/changes/14-modify-data-type-order_total-order_items_price.yaml
+  - include:
+      file: db/changelog/changes/15-make-column-name-categories-unique.yaml

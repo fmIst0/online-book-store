@@ -57,6 +57,17 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
         );
     }
 
+    @ExceptionHandler(DataBaseConflictException.class)
+    protected ResponseEntity<Object> handleDataBaseConflictException(
+            DataBaseConflictException ex,
+            WebRequest request
+    ) {
+        Map<String, Object> body = getBody(ex);
+        return handleExceptionInternal(
+                ex, body, new HttpHeaders(), HttpStatus.BAD_REQUEST, request
+        );
+    }
+
     @Override
     protected ResponseEntity<Object> handleExceptionInternal(
             Exception ex,

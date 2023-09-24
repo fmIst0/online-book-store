@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: make-categories-name-unique
+      author: fmIst0
+      changes:
+        - addUniqueConstraint:
+            tableName: categories
+            columnNames: name
+            constraintName: unique_constraint

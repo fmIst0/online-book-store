@@ -1,7 +1,6 @@
 package com.bookstore.service.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -132,6 +131,7 @@ class BookServiceImplTest {
     public void getBookById_InvalidId_ThrowsEntityNotFoundException() {
         //Given
         Long bookId = -1L;
+        String expected = "No book in DB by id: " + bookId;
 
         when(bookRepository.findById(bookId)).thenReturn(Optional.empty());
 
@@ -140,7 +140,6 @@ class BookServiceImplTest {
                 () -> bookService.getBookById(bookId));
 
         //Then
-        String expected = "No book in DB by id: " + bookId;
         String actual = exception.getMessage();
         assertEquals(EntityNotFoundException.class, exception.getClass());
         assertEquals(expected, actual);
@@ -181,6 +180,7 @@ class BookServiceImplTest {
         CreateBookRequestDto requestDto = getCreateBookRequestDto();
 
         Long bookId = -1L;
+        String expected = "No book in DB by id: " + bookId;
 
         when(bookRepository.findById(bookId)).thenReturn(Optional.empty());
 
@@ -189,7 +189,6 @@ class BookServiceImplTest {
                 () -> bookService.updateBook(bookId, requestDto));
 
         //Then
-        String expected = "No book in DB by id: " + bookId;
         String actual = exception.getMessage();
 
         assertEquals(EntityNotFoundException.class, exception.getClass());
@@ -200,8 +199,41 @@ class BookServiceImplTest {
 
     @Test
     @DisplayName("Verify deleteBookById() method works")
-    public void deleteBookById_ValidBookId_DoesNotThrowEntityNotFoundException() {
-        assertDoesNotThrow(() -> bookService.deleteBookById(1L));
+    public void deleteBookById_validBookId_DoesNotThrowEntityNotFoundException() {
+        //Given
+        Long bookId = 1L;
+
+        when(bookRepository.findById(bookId)).thenReturn(Optional.of(new Book()));
+
+        //When
+        bookService.deleteBookById(bookId);
+
+        //Then
+        verify(bookRepository, times(1)).findById(bookId);
+        verify(bookRepository, times(1)).deleteById(bookId);
+        verifyNoMoreInteractions(bookRepository);
+    }
+
+    @Test
+    @DisplayName("Verify deleteBookById() method works")
+    public void deleteBookById_InValidBookId_ThrowsEntityNotFoundException() {
+        //Given
+        Long bookId = -1L;
+        String expected = "Can't delete a book from DB with id: " + bookId;
+
+        when(bookRepository.findById(bookId)).thenReturn(Optional.empty());
+
+        //When
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
+                () -> bookService.deleteBookById(bookId));
+
+        //Then
+        String actual = exception.getMessage();
+
+        assertEquals(EntityNotFoundException.class, exception.getClass());
+        assertEquals(expected, actual);
+        verify(bookRepository, times(1)).findById(anyLong());
+        verifyNoMoreInteractions(bookRepository);
     }
 
     @Test
@@ -216,23 +248,22 @@ class BookServiceImplTest {
         Book book = getBook();
         List<Book> books = List.of(book);
         BookDto bookDto = getBookDtoByBook(book);
-        List<BookDto> bookDtos = List.of(bookDto);
+        List<BookDto> expected = List.of(bookDto);
 
-        Pageable pageable = Pageable.ofSize(10);
-
-        Page<BookDto> expected = new PageImpl<>(bookDtos, pageable, bookDtos.size());
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Book> bookPage = new PageImpl<>(books, pageable, books.size());
 
         when(bookSpecificationBuilder.build(bookSearchParametersDto)).thenReturn(specification);
-        when(bookRepository.findAll(specification)).thenReturn(books);
+        when(bookRepository.findAll(specification, pageable)).thenReturn(bookPage);
         when(bookMapper.toDto(book)).thenReturn(bookDto);
 
         //When
-        Page<BookDto> actual = bookService.searchBooks(bookSearchParametersDto);
+        List<BookDto> actual = bookService.searchBooks(bookSearchParametersDto, pageable);
 
         //Then
         assertThat(actual).isEqualTo(expected);
         verify(bookSpecificationBuilder, times(1)).build(bookSearchParametersDto);
-        verify(bookRepository, times(1)).findAll(specification);
+        verify(bookRepository, times(1)).findAll(specification, pageable);
         verify(bookMapper, times(1)).toDto(book);
         verifyNoMoreInteractions(bookSpecificationBuilder, bookRepository, bookMapper);
     }
@@ -313,7 +344,7 @@ class BookServiceImplTest {
                 .setDescription("Test Description")
                 .setCoverImage("coverImage")
                 .setAuthor("Tester")
-                .setIsbn("123")
+                .setIsbn("isbn")
                 .setCategoryIds(new HashSet<>());
     }
 
@@ -344,7 +375,7 @@ class BookServiceImplTest {
                 .setDescription("Test Description")
                 .setCoverImage("coverImage")
                 .setAuthor("Tester")
-                .setIsbn("123")
+                .setIsbn("isbn")
                 .setCategories(new HashSet<>());
     }
 
