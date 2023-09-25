@@ -9,9 +9,11 @@ import jakarta.persistence.Table;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
+@Accessors(chain = true)
 @Getter
 @Setter
 @EqualsAndHashCode
@@ -23,7 +25,7 @@ public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
     private String description;
     @Column(name = "is_deleted", nullable = false)

@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -47,8 +46,8 @@ public class BookController {
     @GetMapping("/search")
     @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Search books", description = "Search book by specific search parameters")
-    public Page<BookDto> searchBooks(BookSearchParametersDto searchParameters) {
-        return bookService.searchBooks(searchParameters);
+    public List<BookDto> searchBooks(BookSearchParametersDto searchParameters, Pageable pageable) {
+        return bookService.searchBooks(searchParameters, pageable);
     }
 
     @PostMapping
@@ -64,9 +63,9 @@ public class BookController {
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Update the existing book(only for admins)",
             description = "Update the existing book")
-    public void updateBook(@PathVariable Long id,
+    public BookDto updateBook(@PathVariable Long id,
                            @RequestBody @Valid CreateBookRequestDto bookRequestDto) {
-        bookService.updateBook(id, bookRequestDto);
+        return bookService.updateBook(id, bookRequestDto);
     }
 
     @DeleteMapping("/{id}")

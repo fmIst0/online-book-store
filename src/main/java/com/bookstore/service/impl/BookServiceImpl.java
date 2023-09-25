@@ -15,8 +15,6 @@ import com.bookstore.service.BookService;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -47,14 +45,14 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public List<BookDto> getAll(Pageable pageable) {
-        return bookRepository.findAllPageable(pageable)
+        return bookRepository.findAll(pageable)
                 .stream()
                 .map(bookMapper::toDto)
                 .toList();
     }
 
     @Override
-    public void updateBook(Long id, CreateBookRequestDto bookRequestDto) {
+    public BookDto updateBook(Long id, CreateBookRequestDto bookRequestDto) {
         Set<Category> categories = categoryRepository.findByIdIn(bookRequestDto.getCategoryIds());
         Book bookFromDb = bookRepository.findById(id)
                 .orElseThrow(() ->
@@ -66,27 +64,33 @@ public class BookServiceImpl implements BookService {
         bookFromDb.setDescription(bookRequestDto.getDescription());
         bookFromDb.setCoverImage(bookRequestDto.getCoverImage());
         bookFromDb.setCategories(categories);
-        bookRepository.save(bookFromDb);
+        return bookMapper.toDto(bookRepository.save(bookFromDb));
     }
 
     @Override
     public void deleteBookById(Long id) {
+        if (bookRepository.findById(id).isEmpty()) {
+            throw new EntityNotFoundException("Can't delete a book from DB with id: " + id);
+        }
         bookRepository.deleteById(id);
     }
 
     @Override
-    public Page<BookDto> searchBooks(BookSearchParametersDto searchParameters) {
+    public List<BookDto> searchBooks(BookSearchParametersDto searchParameters, Pageable pageable) {
         Specification<Book> bookSpecification = bookSpecificationBuilder.build(searchParameters);
-        List<BookDto> bookDtos = bookRepository.findAll(bookSpecification)
+        return bookRepository.findAll(bookSpecification, pageable)
                 .stream()
                 .map(bookMapper::toDto)
                 .toList();
-        return new PageImpl<>(bookDtos, Pageable.ofSize(10), bookDtos.size());
     }
 
     @Override
     public List<BookDtoWithoutCategoryIds> findAllByCategoryId(Long categoryId, Pageable pageable) {
-        return bookRepository.findAllByCategoryId(categoryId, pageable)
+        Category categoryFromDb = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Can't find a category in DB by id: " + categoryId)
+                );
+        return bookRepository.findAllByCategoryId(categoryFromDb.getId(), pageable)
                 .stream()
                 .map(bookMapper::toDtoWithoutCategories)
                 .toList();
