@@ -9,11 +9,9 @@ import com.bookstore.mapper.ShoppingCartMapper;
 import com.bookstore.model.Book;
 import com.bookstore.model.CartItem;
 import com.bookstore.model.ShoppingCart;
-import com.bookstore.model.User;
 import com.bookstore.repository.book.BookRepository;
 import com.bookstore.repository.cartitem.CartItemRepository;
 import com.bookstore.repository.shoppingcart.ShoppingCartRepository;
-import com.bookstore.repository.user.UserRepository;
 import com.bookstore.service.ShoppingCartService;
 import jakarta.transaction.Transactional;
 import java.util.HashSet;
@@ -27,7 +25,6 @@ import org.springframework.stereotype.Component;
 public class ShoppingCartServiceImpl implements ShoppingCartService {
     private final ShoppingCartRepository shoppingCartRepository;
     private final ShoppingCartMapper shoppingCartMapper;
-    private final UserRepository userRepository;
     private final CartItemMapper cartItemMapper;
     private final CartItemRepository cartItemRepository;
     private final BookRepository bookRepository;
@@ -55,7 +52,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         CartItem cartItem = cartItemMapper.toEntity(cartItemCreateDto, book, shoppingCart);
         cartItemRepository.save(cartItem);
         shoppingCart.addCartItemToSet(cartItem);
-        return shoppingCartMapper.toDto(getShoppingCartByUserId(userId));
+        return shoppingCartMapper.toDto(shoppingCart);
     }
 
     @Override
@@ -74,18 +71,18 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     @Override
     public void deleteCartItemFromTheCart(Long id) {
+        if (cartItemRepository.findById(id).isEmpty()) {
+            throw new EntityNotFoundException("Can't delete a cart item from DB with id: " + id);
+        }
         cartItemRepository.deleteById(id);
     }
 
     @Override
     public ShoppingCart getShoppingCartByUserId(Long id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() ->
-                        new EntityNotFoundException("Can't find user in DB by id: " + id));
-        return shoppingCartRepository.findByUserId(user.getId())
+        return shoppingCartRepository.findByUserId(id)
                 .orElseThrow(() ->
                         new EntityNotFoundException(
-                                "Can't find a shopping cart by id: " + user.getId()
+                                "Can't find a shopping cart by user id: " + id
                         ));
     }
 
