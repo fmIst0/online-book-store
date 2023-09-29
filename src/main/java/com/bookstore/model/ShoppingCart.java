@@ -14,8 +14,10 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.Accessors;
 import org.hibernate.annotations.SQLDelete;
 
+@Accessors(chain = true)
 @Getter
 @Setter
 @EqualsAndHashCode
