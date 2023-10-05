@@ -94,6 +94,10 @@ class ShoppingCartControllerTest {
             );
             ScriptUtils.executeSqlScript(
                     connection,
+                    new ClassPathResource("database/users_roles/delete-from-users-roles.sql")
+            );
+            ScriptUtils.executeSqlScript(
+                    connection,
                     new ClassPathResource("database/users/delete-from-users.sql")
             );
             ScriptUtils.executeSqlScript(

@@ -29,3 +29,9 @@ databaseChangeLog:
       file: db/changelog/changes/14-modify-data-type-order_total-order_items_price.yaml
   - include:
       file: db/changelog/changes/15-make-column-name-categories-unique.yaml
+  - include:
+      file: db/changelog/changes/16-add-admin-to-users-table.yaml
+  - include:
+      file: db/changelog/changes/17-give-admin-role-to-user.yaml
+  - include:
+      file: db/changelog/changes/17-reset-to-bencrypted-password-for-user.yaml

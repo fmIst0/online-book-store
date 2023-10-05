@@ -87,6 +87,12 @@ Docker Compose with command : `docker-compose up`
 
 ## Or try to test with [Swagger](http://ec2-16-170-234-204.eu-north-1.compute.amazonaws.com/swagger-ui/index.html#/)📍
 
+### Login
+{<br/>
+"email": "awsadmin@example.com",<br/>
+"password": "1234567890"<br/>
+}
+
 
 
 

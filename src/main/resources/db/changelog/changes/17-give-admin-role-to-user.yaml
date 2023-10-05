@@ -1,0 +1,19 @@
+databaseChangeLog:
+  - changeSet:
+      id: give-admin-role-to-user
+      author: fmIst0
+      changes:
+        - sql:
+            dbms: mysql
+            sql: |
+              INSERT INTO users_roles (user_id, role_id)
+              SELECT id, 1
+              FROM users
+              WHERE email = 'awsadmin@example.com'
+        - sql:
+            dbms: mysql
+            sql: |
+              INSERT INTO users_roles (user_id, role_id)
+              SELECT id, 2
+              FROM users
+              WHERE email = 'awsadmin@example.com'
