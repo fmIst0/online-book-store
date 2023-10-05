@@ -1,0 +1,18 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-admin-to-users-table
+      author: fmIst0
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  {name: "email", value: "awsadmin@example.com"}
+              - column:
+                  {name: "password", value: "1234567890"}
+              - column:
+                  {name: "first_name", value: "Bob"}
+              - column:
+                  {name: "last_name", value: "Doe"}
+              - column:
+                  {name: "shipping_address", value: "New Shipping Address"}
